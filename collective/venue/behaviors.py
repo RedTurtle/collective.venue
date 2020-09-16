@@ -10,6 +10,7 @@ from plone.supermodel import model
 from zope import schema
 from zope.interface import provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
+from z3c.relationfield.schema import RelationChoice
 
 
 @provider(IContextAwareDefaultFactory)
@@ -23,22 +24,21 @@ def default_location(context):
 @provider(IFormFieldProvider)
 class ILocation(model.Schema):
 
-    location_uid = schema.Choice(
+    location_ref = RelationChoice(
         title=_(u'label_event_location', default=u'Location'),
         description=_(
             u'description_event_location',
             default=u'Select a location.'),
         required=False,
         missing_value='',
-        defaultFactory=default_location,
         vocabulary='plone.app.vocabularies.Catalog',
     )
     form.widget(
-        'location_uid',
+        'location_ref',
         RelatedItemsFieldWidget,
+        vocabulary='plone.app.vocabularies.Catalog',
         pattern_options={
             'selectableTypes': ['Venue'],
-            'basePath': get_base_path
         }
     )
 
@@ -55,7 +55,7 @@ class ILocation(model.Schema):
     directives.fieldset(
         'venue',
         label=_(u'fieldset_venue'),
-        fields=['location_uid', 'location_notes']
+        fields=['location_ref', 'location_notes']
     )
 
 
@@ -72,22 +72,19 @@ def default_organizer(context):
 @provider(IFormFieldProvider)
 class IOrganizer(model.Schema):
 
-    organizer_uid = schema.Choice(
+    organizer_ref = RelationChoice(
         title=_(u'label_event_organizer', default=u'Organizer'),
         description=_(
             u'description_event_organizer',
             default=u'Select an organizer.'),
         required=False,
-        missing_value='',
-        defaultFactory=default_organizer,
         vocabulary='plone.app.vocabularies.Catalog',
     )
     form.widget(
-        'organizer_uid',
+        'organizer_ref',
         RelatedItemsFieldWidget,
         pattern_options={
             'selectableTypes': ['Venue'],
-            'basePath': get_base_path
         }
     )
 
@@ -104,6 +101,6 @@ class IOrganizer(model.Schema):
     directives.fieldset(
         'venue',
         label=_(u'fieldset_venue'),
-        fields=['organizer_uid', 'organizer_notes'],
+        fields=['organizer_ref', 'organizer_notes'],
         order=10,
     )
